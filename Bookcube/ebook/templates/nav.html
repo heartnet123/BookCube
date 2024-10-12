@@ -7,10 +7,15 @@
 <body>
     <nav class="bg-indigo-600 p-4">
         <div class="container mx-auto flex justify-between items-center">
-            <a href="{% url 'dashboard' %}" class="text-2xl font-bold text-white">BookCube</a>
+            <a href="" class="text-2xl font-bold text-white"></a>
             <div>
-                <a href="'{% url 'dashboard' %}" class="bg-white text-indigo-600 px-4 py-2 rounded hover:bg-gray-200">เข้าสู่ระบบ</a>
-                <a href="'{% url 'dashboard' %}" class="bg-white text-indigo-600 px-4 py-2 rounded hover:bg-gray-200">ลงทะเบียน</a>
+                {% if user.is_authenticated %}
+                    <span class="text-white">สวัสดี, {{ user.username }}</span>
+                    <a href="{% url 'logout' %}" class="bg-white text-indigo-600 px-4 py-2 rounded hover:bg-gray-200">ออกจากระบบ</a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="bg-white text-indigo-600 px-4 py-2 rounded hover:bg-gray-200">เข้าสู่ระบบ</a>
+                    <a href="{% url 'register' %}" class="bg-white text-indigo-600 px-4 py-2 rounded hover:bg-gray-200">ลงทะเบียน</a>
+                {% endif %}
             </div>
         </div>
     </nav>

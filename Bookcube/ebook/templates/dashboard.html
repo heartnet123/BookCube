@@ -1,72 +1,67 @@
+<!-- dashboard.html -->
 {% include 'nav.html' %}
+{% include 'side_nav.html' %}
 <html lang="th">
- <head>
-  <meta charset="utf-8"/>
-  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-  <script src="https://cdn.tailwindcss.com">
-  </script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&amp;display=swap" rel="stylesheet"/>
-  <style>
-   body {
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&amp;display=swap" rel="stylesheet"/>
+    <style>
+        body {
             font-family: 'Roboto', sans-serif;
         }
-  </style>
- </head>
- <body class="bg-gray-900 text-white">
-  <div class="container mx-auto p-4">
-   <div class="relative mb-8">
-    <div class="relative">
-        <input class="w-full p-4 pl-10 rounded-full bg-white text-gray-700 focus:outline-none shadow-md" placeholder="ค้นหา..." type="text"/>
-        <i class="fas fa-search absolute top-0 left-0 mt-5 ml-4 text-gray-500"></i>
+    </style>
+</head>
+<body class="bg-gray-900 text-white">
+    <div class="container mx-auto p-4">
+        <div class="relative mb-8">
+            <div class="relative">
+                <input class="w-full p-4 pl-10 rounded-full bg-white text-gray-700 focus:outline-none shadow-md" placeholder="ค้นหา..." type="text"/>
+                <i class="fas fa-search absolute top-0 left-0 mt-5 ml-4 text-gray-500"></i>
+            </div>
+        </div>
+        <h2 class="text-2xl font-medium mb-4">หนังสือของฉัน</h2>
+        <div class="flex space-x-4 mb-8">
+            {% if has_completed_orders %}
+                {% for order_item in completed_order_items %}
+                <div class="text-center">
+                    <img alt="{{ order_item.book.title }} book cover" class="w-36 h-48 rounded-lg mb-2 shadow-lg" height="250" src="{{ order_item.book.cover_image.url }}" width="200"/>
+                    <p>{{ order_item.book.title }}</p>
+                    <div class="text-yellow-400"></div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p>คุณยังไม่ได้ซื้อหนังสือ</p>
+            {% endif %}
+        </div>
+        <h2 class="text-2xl font-medium mb-4">อ่านต่อ</h2>
+        <div class="space-y-4">
+            {% if has_completed_orders %}
+                {% for order_item in completed_order_items %}
+                <div class="flex items-center justify-between bg-white p-4 rounded-lg shadow-md">
+                    <div class="flex items-center space-x-4">
+                        <img alt="{{ order_item.book.title }} book cover" class="w-12 h-18 rounded-lg shadow-sm" height="75" src="{{ order_item.book.cover_image.url }}" width="50"/>
+                        <div>
+                            <p>{{ order_item.book.title }}
+                                <a href="{% url 'read_ebook' order_item.book.id %}" class="text-blue-500 hover:underline">อ่าน</a>
+                            </p>
+                            <p class="text-gray-500 text-sm">{{ order_item.book.author.name }}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="w-32 bg-gray-300 rounded-full h-2.5">
+                            <!-- <div class="bg-blue-500 h-2.5 rounded-full" style="width: {{ order_item.book.progress }}%"></div> -->
+                        </div>
+                        <i class="fas fa-ellipsis-h text-gray-500"></i>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p>คุณยังไม่มีคำสั่งซื้อที่เสร็จสมบูรณ์</p>
+            {% endif %}
+        </div>
     </div>
-    <i class="fas fa-search absolute top-0 left-0 mt-5 ml-4 text-gray-500">
-    </i>
-   </div>
-   <h2 class="text-2xl font-medium mb-4">
-    หนังสือของฉัน
-   </h2>
-   <div class="flex space-x-4 mb-8">
-    {% for book in books %}
-    <div class="text-center">
-     <img alt="{{ book.title }} book cover" class="w-36 h-48 rounded-lg mb-2 shadow-lg" height="250" src="{{ book.cover_image.url }}" width="200"/>
-     <p>
-      {{ book.title }}
-     </p>
-     <div class="text-yellow-400">
-     </div>
-    </div>
-    {% endfor %}
-   </div>
-   <h2 class="text-2xl font-medium mb-4">
-    อ่านต่อ
-   </h2>
-   <div class="space-y-4">
-    {% for book in books %}
-    <div class="flex items-center justify-between bg-white p-4 rounded-lg shadow-md">
-     <div class="flex items-center space-x-4">
-      <img alt="{{ book.title }} book cover" class="w-12 h-18 rounded-lg shadow-sm" height="75" src="{{ book.cover_image.url }}" width="50"/>
-      <div>
-       <p>
-        {{ book.title }}
-        <a href="{% url 'read_ebook' book.id %}" class="text-blue-500 hover:underline">อ่าน</a>
-       </p>
-       <p class="text-gray-500 text-sm">
-        {{ book.author.name }}
-       </p>
-      </div>
-     </div>
-     <div class="flex items-center space-x-4">
-      <div class="w-32 bg-gray-300 rounded-full h-2.5">
-       <!-- <div class="bg-blue-500 h-2.5 rounded-full" style="width: {{ book.progress }}%"> -->
-       </div>
-      </div>
-      <i class="fas fa-ellipsis-h text-gray-500">
-      </i>
-     </div>
-    </div>
-    {% endfor %}
-   </div>
-  </div>
- </body>
+</body>
 </html>
