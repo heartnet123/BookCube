@@ -31,37 +31,27 @@
      </button>
     </div>
     <div class="grid grid-cols-2 gap-4">
-     {% for book in books %}
+     {% for series in series %}
      <div class="bg-gray-800 p-4 rounded flex">
-      <img alt="Cover image of {{ book.title }}" class="w-24 h-36 mr-4" height="150" src="{{ book.cover_image.url }}" width="100"/>
+      <a href="{% url 'dashboard' %}">
+       <img alt="Cover image of {{ series.title }}" class="w-36 h-48 mr-4" height="150" src="{{ series.books.last.cover_image.url }}" width="100"/>
+      </a>
       <div>
        <div class="flex items-center mb-2">
         <h2 class="text-xl font-semibold">
-         {{ book.title }}
+         {{ series.title }}
         </h2>
        </div>
        <div class="flex items-center text-gray-400 mb-2">
         <i class="fas fa-star mr-1">
         </i>
         <span class="mr-4">
-         {{ book.rating }}
-        </span>
-        <i class="fas fa-users mr-1">
-        </i>
-        <span class="mr-4">
-         {{ book.reviews_count }}
+         {{ series.rating }}
         </span>
        </div>
        <div class="text-gray-400 text-sm mb-2">
-        {% for genre in book.genres.all %}
         <span class="mr-2">
-         {{ genre.name }}
-        </span>
-        {% endfor %}
-       </div>
-       <div class="text-gray-400 text-sm mb-2">
-        <span class="mr-2">
-         Author: {{ book.author.name }}
+         Author: {{ series.author.name }}
         </span>
        </div>
       </div>

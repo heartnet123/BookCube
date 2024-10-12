@@ -18,8 +18,7 @@
     <div class="container mx-auto p-4">
         <div class="relative mb-8">
             <div class="relative">
-                <input class="w-full p-4 pl-10 rounded-full bg-white text-gray-700 focus:outline-none shadow-md" placeholder="ค้นหา..." type="text"/>
-                <i class="fas fa-search absolute top-0 left-0 mt-5 ml-4 text-gray-500"></i>
+
             </div>
         </div>
         <h2 class="text-2xl font-medium mb-4">หนังสือของฉัน</h2>
@@ -49,12 +48,6 @@
                             </p>
                             <p class="text-gray-500 text-sm">{{ order_item.book.author.name }}</p>
                         </div>
-                    </div>
-                    <div class="flex items-center space-x-4">
-                        <div class="w-32 bg-gray-300 rounded-full h-2.5">
-                            <!-- <div class="bg-blue-500 h-2.5 rounded-full" style="width: {{ order_item.book.progress }}%"></div> -->
-                        </div>
-                        <i class="fas fa-ellipsis-h text-gray-500"></i>
                     </div>
                 </div>
                 {% endfor %}

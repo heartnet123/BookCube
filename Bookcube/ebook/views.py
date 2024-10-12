@@ -8,6 +8,7 @@ from django.views import View
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import *
+from django.db.models import Avg
 
 
 class DashboardView(LoginRequiredMixin, View):
@@ -32,16 +33,21 @@ class EbookReadView(LoginRequiredMixin, View):
 
 class OrderView(LoginRequiredMixin, View):
     def get(self, request):
+        books = Book.objects.all()
         orders = Order.objects.filter(user=request.user)
         order_items = OrderItem.objects.filter(order__user=request.user)
-        return render(request, 'order.html', {'orders': orders, 'order_items': order_items})
+        book_prices = {book.id: book.price for book in books}
+        return render(request, 'order.html', {'orders': orders, 'order_items': order_items, 'books': books, 'book_prices': book_prices})
 
 class SearchView(View):
     def get(self, request):
         query = request.GET.get('q', '')
         books = Book.objects.filter(title__icontains=query)
         authors = Author.objects.filter(name__icontains=query)
-        series = BookSeries.objects.filter(title__icontains=query)
+        series = BookSeries.objects.all().annotate(average_rating=Avg('books__reviews__rating'))
+        if query:
+            series = series.filter(title__icontains=query)
+
         context = {
             'query': query,
             'books': books,
@@ -49,3 +55,14 @@ class SearchView(View):
             'series': series,
         }
         return render(request, 'search.html', context)
+class StoreView(View):
+    def get(self, request):
+        context = {}
+        books = Book.objects.all()
+        context['books'] = books
+        if request.user.is_authenticated:
+            completed_order_items = OrderItem.objects.filter(order__user=request.user, order__status='Completed')
+            context['completed_order_items'] = completed_order_items
+            context['has_completed_orders'] = completed_order_items.exists()
+        
+        return render(request, 'store.html', context)
