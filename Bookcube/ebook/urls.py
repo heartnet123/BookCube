@@ -7,4 +7,5 @@ urlpatterns = [
     path('order/', OrderView.as_view(), name='order'),
     path('search/', SearchView.as_view(), name='search'),
     path('store/', StoreView.as_view(), name='store'),
+    path('serie/<int:series_id>/', SerieDetailView.as_view(), name='serie_detail'),
 ]

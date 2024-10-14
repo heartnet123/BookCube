@@ -66,3 +66,12 @@ class StoreView(View):
             context['has_completed_orders'] = completed_order_items.exists()
         
         return render(request, 'store.html', context)
+
+class SerieDetailView(View):
+    def get(self, request, series_id):
+        series = get_object_or_404(BookSeries, id=series_id)
+        
+        context = {
+            'series': series,
+        }
+        return render(request, 'serie_detail.html', context)
