@@ -26,35 +26,20 @@
         <div class="flex space-x-4 mb-8">
             {% if has_completed_orders %}
                 {% for order_item in completed_order_items %}
-                <div class="text-center">
-                    <img alt="{{ order_item.book.title }} book cover" class="w-36 h-48 rounded-lg mb-2 shadow-lg" height="250" src="{{ order_item.book.cover_image.url }}" width="200"/>
-                    <p>{{ order_item.book.title }}</p>
-                    <div class="text-yellow-400"></div>
+                <div class="text-center group">
+                    <a href="{% url 'read_ebook' order_item.book.id %}" class="relative block">
+                        <img alt="{{ order_item.book.title }} book cover" class="w-36 h-48 rounded-lg mb-2 shadow-lg transition-transform transform group-hover:scale-105" height="250" src="{{ order_item.book.cover_image.url }}" width="200"/>
+                        <div class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <span class="text-white text-lg">อ่าน</span>
+                        </div>
+                    </a>
+                    <p class="group-hover:text-yellow-400 transition-colors">{{ order_item.book.title }}</p>
                 </div>
                 {% endfor %}
             {% else %}
                 <p>คุณยังไม่ได้ซื้อหนังสือ</p>
             {% endif %}
         </div>
-        <h2 class="text-2xl font-medium mb-4">อ่านต่อ</h2>
-        <div class="space-y-4">
-            {% if has_completed_orders %}
-                {% for order_item in completed_order_items %}
-                <div class="flex items-center justify-between bg-white p-4 rounded-lg shadow-md">
-                    <div class="flex items-center space-x-4">
-                        <img alt="{{ order_item.book.title }} book cover" class="w-12 h-18 rounded-lg shadow-sm" height="75" src="{{ order_item.book.cover_image.url }}" width="50"/>
-                        <div>
-                            <p>{{ order_item.book.title }}
-                                <a href="{% url 'read_ebook' order_item.book.id %}" class="text-blue-500 hover:underline">อ่าน</a>
-                            </p>
-                            <p class="text-gray-500 text-sm">{{ order_item.book.author.name }}</p>
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
-            {% else %}
-                <p>คุณยังไม่มีคำสั่งซื้อที่เสร็จสมบูรณ์</p>
-            {% endif %}
         </div>
     </div>
 </body>

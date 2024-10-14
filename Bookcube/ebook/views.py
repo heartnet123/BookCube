@@ -24,11 +24,18 @@ class DashboardView(LoginRequiredMixin, View):
         context['books'] = Book.objects.all()  
         return render(request, 'dashboard.html', context)
 
-class EbookReadView(LoginRequiredMixin, View):
+class EbookReadView(View):
     def get(self, request, book_id):
-        book = get_object_or_404(Book, id=book_id)
-        return render(request, 'ebook.html', {'book': book})
+        try:
+            book = Book.objects.get(id=book_id)
+        except Book.DoesNotExist:
+            return render(request, 'error.html', {'message': 'ไม่มีหนังสือในระบบ'})
+        
+        if not OrderItem.objects.filter(order__user=request.user, book=book).exists():
+            return render(request, 'error.html', {'message': 'คุณไม่ได้ซื้อหนังสือเล่มนี้'})
 
+        return render(request, 'ebook.html', {'book': book})
+    
 
 
 class OrderView(LoginRequiredMixin, View):

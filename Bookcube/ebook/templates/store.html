@@ -17,7 +17,7 @@
                     <div class="bg-gray-800 p-4 rounded mb-4 w-full mt-4">
                         <img src="{{ book.cover_image.url }}" alt="ปกหนังสือของ {{ book.title }}" class="w-full h-48 object-cover mb-4 rounded">
                         <h2 class="text-xl font-semibold">{{ book.title }}</h2>
-                        <p>ผู้เขียน: {{ book.author }}</p>
+                        <p>ผู้เขียน: {{ book.series.author.name }}</p>
                         <p>ราคา: {{ book.price }} บาท</p>
                         <div class="mt-4">
                             {% if user.is_authenticated %}
