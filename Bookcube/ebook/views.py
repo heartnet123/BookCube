@@ -87,10 +87,8 @@ class SerieDetailView(View):
 
 class CartView(LoginRequiredMixin, View):
     def get(self, request):
-        # ดึง ID ของหนังสือในตะกร้าจาก session
         cart_ids = request.session.get('cart', [])
         
-        # ดึงข้อมูลหนังสือที่อยู่ในตะกร้า
         books_in_cart = Book.objects.filter(id__in=cart_ids)
 
         context = {
@@ -101,15 +99,13 @@ class CartView(LoginRequiredMixin, View):
     
 class RemoveFromCartView(LoginRequiredMixin, View):
     def post(self, request, book_id):
-        # ดึง ID ของหนังสือที่ต้องการลบออกจากตะกร้า
         cart = request.session.get('cart', [])
         
-        # ถ้ามี ID ของหนังสือในตะกร้า ก็ลบออก
         if book_id in cart:
             cart.remove(book_id)
             request.session['cart'] = cart
 
-        return redirect('cart')  # เปลี่ยนเส้นทางไปที่หน้า Cart
+        return redirect('cart')
 
 class AddToCartView(LoginRequiredMixin, View):
     def post(self, request, book_id):
@@ -121,3 +117,31 @@ class AddToCartView(LoginRequiredMixin, View):
             request.session['cart'] = cart
 
         return redirect('store')  # Redirect to your main page or wherever
+
+class FavoriteView(LoginRequiredMixin, View):
+    def get(self, request):
+        favorite_series = UserFavoriteSeries.objects.filter(user=request.user)
+        
+        series_ids = favorite_series.values_list('series_id', flat=True)
+        books_in_favorites = Book.objects.filter(series__id__in=series_ids)
+
+        context = {
+            'books_in_favorites': books_in_favorites,
+            'favorite_count': len(favorite_series),
+        }
+        return render(request, 'favorite.html', context)
+
+class AddToFavoritesView(LoginRequiredMixin, View):
+    def post(self, request, series_id):
+        series = get_object_or_404(BookSeries, id=series_id)
+        
+        UserFavoriteSeries.objects.get_or_create(user=request.user, series=series)
+        
+        return redirect('favorites')
+
+class RemoveFromFavoritesView(LoginRequiredMixin, View):
+    def post(self, request, series_id):
+        favorite = get_object_or_404(UserFavoriteSeries, user=request.user, series_id=series_id)
+        favorite.delete()
+
+        return redirect('favorites')
