@@ -1,5 +1,5 @@
 # Create your views here.
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from .models import *
 from django.views.generic import TemplateView
 from django.db import models
@@ -82,3 +82,42 @@ class SerieDetailView(View):
             'series': series,
         }
         return render(request, 'serie_detail.html', context)
+    
+    
+
+class CartView(LoginRequiredMixin, View):
+    def get(self, request):
+        # ดึง ID ของหนังสือในตะกร้าจาก session
+        cart_ids = request.session.get('cart', [])
+        
+        # ดึงข้อมูลหนังสือที่อยู่ในตะกร้า
+        books_in_cart = Book.objects.filter(id__in=cart_ids)
+
+        context = {
+            'books_in_cart': books_in_cart,
+            'cart_count': len(cart_ids),
+        }
+        return render(request, 'cart.html', context)
+    
+class RemoveFromCartView(LoginRequiredMixin, View):
+    def post(self, request, book_id):
+        # ดึง ID ของหนังสือที่ต้องการลบออกจากตะกร้า
+        cart = request.session.get('cart', [])
+        
+        # ถ้ามี ID ของหนังสือในตะกร้า ก็ลบออก
+        if book_id in cart:
+            cart.remove(book_id)
+            request.session['cart'] = cart
+
+        return redirect('cart')  # เปลี่ยนเส้นทางไปที่หน้า Cart
+
+class AddToCartView(LoginRequiredMixin, View):
+    def post(self, request, book_id):
+        book = Book.objects.get(id=book_id)
+        cart = request.session.get('cart', [])
+    
+        if book.id not in cart:
+            cart.append(book.id)
+            request.session['cart'] = cart
+
+        return redirect('store')  # Redirect to your main page or wherever

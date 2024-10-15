@@ -8,4 +8,7 @@ urlpatterns = [
     path('search/', SearchView.as_view(), name='search'),
     path('store/', StoreView.as_view(), name='store'),
     path('serie/<int:series_id>/', SerieDetailView.as_view(), name='serie_detail'),
+    path('cart/', CartView.as_view(), name='cart'),
+    path('add_to_cart/<int:book_id>/', AddToCartView.as_view(), name='add_to_cart'),
+    path('remove_from_cart/<int:book_id>/', RemoveFromCartView.as_view(), name='remove_from_cart'),
 ]
