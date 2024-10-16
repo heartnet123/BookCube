@@ -1,0 +1,48 @@
+{% include 'nav.html' %}
+{% include 'side_nav.html' %}
+<body class="bg-gray-900 font-sans ">
+    <div class="container mx-auto p-4 flex justify-center items-center min-h-screen">
+        <div class="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md">
+            <h1 class="text-2xl font-bold mb-6 text-center text-white">เพิ่มหนังสือ</h1>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="mb-4">
+                    <label for="id_title" class="block text-gray-400">ชื่อหนังสือ</label>
+                    {{ book_form.title }}
+                </div>
+                <div class="mb-4">
+                    <label for="id_series" class="block text-gray-400">ซีรี่ย์</label>
+                    {{ book_form.series }}
+                    <a href="{% url 'admin_add_serie' %}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mt-2 inline-block">เพิ่มซีรีส์ใหม่</a>
+                </div>
+                <div class="mb-4">
+                    <label for="id_volume_number" class="block text-gray-400">เล่มที่</label>
+                    {{ book_form.volume_number }}
+                </div>
+                <div class="mb-4">
+                    <label for="id_published_date" class="block text-gray-400">วันที่เผยแพร่</label>
+                    {{ book_form.published_date }}
+                </div>
+                <div class="mb-4">
+                    <label for="id_cover_image" class="block text-gray-400">ภาพปก</label>
+                    {{ book_form.cover_image }}
+                </div>
+                <div class="mb-4">
+                    <label for="id_price" class="block text-gray-400">ราคา</label>
+                    {{ book_form.price }}
+                </div>
+                <div class="mb-4">
+                    <label for="id_categories" class="block text-gray-400">ประเภท</label>
+                    {{ book_form.categories }}
+                </div>
+                <div class="mb-4">
+                    <label for="id_ebook_file" class="block text-gray-400">ไฟล์หนังสืออิเล็กทรอนิกส์</label>
+                    {{ book_form.ebook_file }}
+                </div>
+                <div class="flex justify-center mt-6">
+                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300">เพิ่ม</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>

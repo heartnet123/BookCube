@@ -10,13 +10,14 @@
     <div class="ml-64 p-4 w-full">
         <h1 class="text-2xl font-semibold">ตะกร้าของฉัน</h1>
         <ul class="grid grid-cols-5 gap-6">
-            {% for book in books_in_cart %}
+            {% for item in books_in_cart %}
                 <li class="bg-gray-800 p-4 rounded mb-4">
-                    <img src="{{ book.cover_image.url }}" alt="ปกหนังสือของ {{ book.title }}" class="w-full h-48 object-cover mb-4 rounded">
-                    <h2 class="text-xl font-semibold">{{ book.title }}</h2>
-                    <p>ผู้เขียน: {{ book.series.author.name }}</p>
-                    <p>ราคา: {{ book.price }} บาท</p>
-                    <form action="{% url 'remove_from_cart' book.id %}" method="post" class="inline">
+                    <img src="{{ item.book.cover_image.url }}" alt="ปกหนังสือของ {{ item.book.title }}" class="w-full h-48 object-cover mb-4 rounded">
+                    <h2 class="text-xl font-semibold">{{ item.book.title }}</h2>
+                    <p>ผู้เขียน: {{ item.book.series.author.name }}</p>
+                    <p>ราคา: {{ item.book.price }} บาท</p>
+                    <p>จำนวน: {{ item.quantity }}</p>
+                    <form action="{% url 'remove_from_cart' item.book.id %}" method="post" class="inline">
                         {% csrf_token %}
                         <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition duration-300">ลบออก</button>
                     </form>
@@ -25,6 +26,9 @@
                 <li>ตะกร้าของคุณว่างเปล่า</li>
             {% endfor %}
         </ul>
+        {% if books_in_cart %}
+            <a href="{% url 'checkout' %}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300 mt-4 inline-block">ไปยังหน้า Checkout</a>
+        {% endif %}
     </div>
 </body>
 </html>

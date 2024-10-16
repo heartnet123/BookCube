@@ -101,6 +101,7 @@ class CartItem(models.Model):
 
     def __str__(self):
         return f"{self.quantity} x {self.book.title} ในตะกร้าของ {self.cart.user.username}"
+    
 
 class Order(models.Model):
     STATUS_CHOICES = (
@@ -114,6 +115,8 @@ class Order(models.Model):
 
     def __str__(self):
         return f"คำสั่งซื้อ {self.id} โดย {self.user.username}"
+    def total_price(self):
+        return sum(item.total_price() for item in self.items.all())
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
@@ -123,6 +126,9 @@ class OrderItem(models.Model):
 
     def __str__(self):
         return f"{self.quantity} x {self.book.title} ในคำสั่งซื้อ {self.order.id}"
+    
+    def total_price(self):
+        return self.price * self.quantity
 
 class Payment(models.Model):
     STATUS_CHOICES = (
