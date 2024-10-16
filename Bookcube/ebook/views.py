@@ -238,3 +238,18 @@ class NotificationView(LoginRequiredMixin, View):
             'notifications': notifications,
         }
         return render(request, 'notifications.html', context)
+
+@login_required
+def checkout(request):
+    cart, created = Cart.objects.get_or_create(user=request.user)  
+    cart_items = cart.items.all()
+
+    subtotal = sum(item.book.price * item.quantity for item in cart_items)  
+    total = subtotal
+
+    context = {
+        'cart_items': cart_items,
+        'subtotal': subtotal,
+        'total': total,
+    }
+    return render(request, 'check-out.html', context)
