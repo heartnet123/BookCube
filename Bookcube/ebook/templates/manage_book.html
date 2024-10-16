@@ -1,0 +1,53 @@
+{% include 'nav.html' %}
+{% include 'side_nav.html' %}
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>จัดการหนังสือ</title>
+</head>
+<body class="bg-gray-900 text-white">
+    <div class="container mx-auto p-12 w-full overflow-hidden">
+        <h1 class="text-2xl font-bold mb-6 text-center">จัดการหนังสือ</h1>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left text-gray-400">
+                <thead class="bg-gray-800 text-gray-300">
+                    <tr>
+                        <th scope="col" class="py-3 px-6">ชื่อหนังสือ</th>
+                        <th scope="col" class="py-3 px-6">ซีรี่ย์</th>
+                        <th scope="col" class="py-3 px-6">เล่มที่</th>
+                        <th scope="col" class="py-3 px-6">วันที่เผยแพร่</th>
+                        <th scope="col" class="py-3 px-6">ราคา</th>
+                        <th scope="col" class="py-3 px-6">จัดการ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for book in books %}
+                        <tr class="bg-gray-800 border-b border-gray-700">
+                            <td class="py-4 px-6">{{ book.title }}</td>
+                            <td class="py-4 px-6">{{ book.series.title }}</td>
+                            <td class="py-4 px-6">{{ book.volume_number }}</td>
+                            <td class="py-4 px-6">{{ book.published_date }}</td>
+                            <td class="py-4 px-6">{{ book.price }} บาท</td>
+                            <td class="py-4 px-6 flex space-x-2">
+                                <a href="{% url 'admin_edit_book' book.id %}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300">แก้ไข</a>
+                                <form action="{% url 'delete_book' book.id  %}" method="post" class="inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition duration-300">ลบ</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="6" class="py-4 px-6 text-center">ไม่มีหนังสือในระบบ</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="mt-4">
+                <a href="{% url 'admin_add_book' %}" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-300">เพิ่มหนังสือใหม่</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
