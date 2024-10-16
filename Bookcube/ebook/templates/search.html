@@ -40,7 +40,8 @@
                             <div class="flex items-center text-gray-400 mb-2">
                                 <div class="flex items-center text-gray-400 mb-2">
                                     <form action="{% url 'add_to_favorites' series.id %}" method="post" class="flex items-center hover:text-white transition duration-200">
-                                        <i class="fas fa-star mr-1"></i>
+                                        {% csrf_token %}
+                                        <button class="fas fa-star mr-1"></button>
                                     </form>
                                 </div>
                             </div>

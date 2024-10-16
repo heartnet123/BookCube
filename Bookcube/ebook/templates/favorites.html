@@ -1,0 +1,54 @@
+{% include 'nav.html' %}
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>รายการโปรดของคุณ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+</head>
+<body class="bg-gray-900 text-white">
+    <div class="flex">
+        {% include 'side_nav.html' %}
+        <div class="ml-64 p-4 w-full">
+            <div class="flex items-center mb-4">
+                <h1 class="text-2xl font-semibold">รายการโปรดของคุณ</h1>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                {% for favorite in favorite_series %}
+                <div class="bg-gray-800 p-4 rounded flex">
+                    <a href="{% url 'serie_detail' favorite.series.id %}">
+                        <img alt="ภาพปก {{ favorite.series.title }}" class="w-36 h-48 mr-6" src="{{ favorite.series.books.last.cover_image.url }}"/>
+                    </a>
+                    <div class="flex flex-col justify-between w-full ml-2">
+                        <div>
+                            <div class="flex items-center mb-2">
+                                <h2 class="text-xl font-semibold">{{ favorite.series.title }}</h2>
+                            </div>
+                            <div class="flex items-center text-gray-400 mb-2">
+                                <div class="flex items-center">
+                                    <form action="{% url 'remove_from_favorites' favorite.series.id %}" method="post" class="flex items-center hover:text-white transition duration-200">
+                                        {% csrf_token %}
+                                        <button type="submit" class="fas fa-star mr-1"></button>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="text-gray-400 text-sm mb-2">
+                                <span class="mr-2">ผู้แต่ง: {{ favorite.series.author.name }}</span>
+                            </div>
+                        </div>
+                        <div class="self-end">
+                            <a href="{% url 'serie_detail' favorite.series.id %}" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                                ดูรายละเอียด
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <p>คุณยังไม่มีรายการโปรด</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>

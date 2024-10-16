@@ -120,24 +120,25 @@ class AddToCartView(LoginRequiredMixin, View):
 
 class FavoriteView(LoginRequiredMixin, View):
     def get(self, request):
-        favorite_series = UserFavoriteSeries.objects.filter(user=request.user)
-        
-        series_ids = favorite_series.values_list('series_id', flat=True)
-        books_in_favorites = Book.objects.filter(series__id__in=series_ids)
+        # ดึงรายการโปรดของผู้ใช้
+        favorite_series = UserFavoriteSeries.objects.filter(user=request.user).select_related('series')
 
         context = {
-            'books_in_favorites': books_in_favorites,
-            'favorite_count': len(favorite_series),
+            'favorite_series': favorite_series,
         }
-        return render(request, 'favorite.html', context)
+
+        return render(request, 'favorites.html', context)
 
 class AddToFavoritesView(LoginRequiredMixin, View):
     def post(self, request, series_id):
         series = get_object_or_404(BookSeries, id=series_id)
-        
-        UserFavoriteSeries.objects.get_or_create(user=request.user, series=series)
-        
-        return redirect('favorites')
+
+        # ตรวจสอบว่าซีรีส์อยู่ในรายการโปรดแล้วหรือไม่
+        if not UserFavoriteSeries.objects.filter(user=request.user, series=series).exists():
+            UserFavoriteSeries.objects.create(user=request.user, series=series)
+
+        return redirect('search')  # เปลี่ยนเส้นทางไปที่หน้า Favorites
+
 
 class RemoveFromFavoritesView(LoginRequiredMixin, View):
     def post(self, request, series_id):
