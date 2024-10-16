@@ -16,7 +16,7 @@
         {% for order in orders %}
         <tr>
             <td class="py-2 px-4 border-b border-black-200 text-center">{{ order.id|default:"N/A" }}</td>
-            <td class="py-2 px-4 border-b border-black-200 text-center">{{ order.total_price|default:"N/A" }}</td>
+            <td class="py-2 px-4 border-b border-black-200 text-center">{{ order.total_price|floatformat:2|default:"N/A" }} บาท</td>
             <td class="py-2 px-4 border-b border-black-200 text-center">{{ order.order_date|default:"N/A" }}</td>
             <td class="py-2 px-4 border-b border-black-200 text-center">{{ order.status|default:"N/A" }}</td>
             <td class="py-2 px-4 border-b border-black-200">

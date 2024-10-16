@@ -88,14 +88,24 @@ class StoreView(View):
 class SerieDetailView(View):
     def get(self, request, series_id):
         series = get_object_or_404(BookSeries, id=series_id)
+        categories = Category.objects.filter(book__series=series).distinct()
         
+        books = series.books.all()
+        
+        completed_books = []
+        if request.user.is_authenticated:
+            completed_order_items = OrderItem.objects.filter(order__user=request.user, order__status='Completed', book__in=books)
+            completed_books = completed_order_items.values_list('book', flat=True)
+
         context = {
             'series': series,
+            'categories': categories,
+            'completed_books': completed_books,
         }
         return render(request, 'serie_detail.html', context)
-    
-    
 
+    
+    
 class CartView(LoginRequiredMixin, View):
     def get(self, request):
         cart, created = Cart.objects.get_or_create(user=request.user)  
@@ -262,10 +272,10 @@ def checkout(request):
     if request.method == 'POST':
         subtotal = sum(item.book.price * item.quantity for item in cart_items)  
 
-        order = Order.objects.create(user=request.user, status='Completed')  # ไม่ต้องใส่ total ที่นี่
+        order = Order.objects.create(user=request.user, status='Completed')  
 
         for item in cart_items:
-            OrderItem.objects.create(order=order, book=item.book, quantity=item.quantity)
+            OrderItem.objects.create(order=order, book=item.book, quantity=item.quantity, price=item.book.price)
 
         cart.items.all().delete()
 
@@ -280,12 +290,6 @@ def checkout(request):
         'total': total,
     }
     return render(request, 'check-out.html', context)
-
-from django.views.generic import ListView
-from django.views.generic.edit import FormMixin
-from django.shortcuts import get_object_or_404, redirect
-from .models import Review, Book
-from .forms import ReviewForm
 
 class ReviewView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
@@ -314,3 +318,46 @@ class FormReviewView(View):
             review.user = request.user
             review.save()
             return redirect('reviews', book_id=book.id)
+
+
+class ManageBookView(View):
+    def get(self, request):
+        books = Book.objects.all()
+        context = {
+            'books': books
+        }
+        return render(request, 'manage_book.html', context)
+
+
+class EditBookView(View):
+    def get(self, request, book_id):
+        book = get_object_or_404(Book, id=book_id)
+        form = BookForm(instance=book)
+        context = {
+            'form': form,
+            'book': book
+        }
+        return render(request, 'edit_book.html', context)
+
+    def post(self, request, book_id):
+        book = get_object_or_404(Book, id=book_id)
+        form = BookForm(request.POST, request.FILES, instance=book)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'แก้ไขหนังสือเรียบร้อยแล้ว')
+            return redirect('manage_book')
+        else:
+            messages.error(request, 'พบข้อผิดพลาดในการแก้ไขหนังสือ')
+        context = {
+            'form': form,
+            'book': book
+        }
+        return render(request, 'edit_book.html', context)
+
+
+class DeleteBookView(View):
+    def post(self, request, book_id):
+        book = get_object_or_404(Book, id=book_id)
+        book.delete()
+        messages.success(request, 'ลบหนังสือเรียบร้อยแล้ว')
+        return redirect('manage_book')
