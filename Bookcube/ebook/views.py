@@ -13,6 +13,9 @@ from django.db.models import Avg
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
 from django.utils.decorators import method_decorator
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
 
 class DashboardView(LoginRequiredMixin, View):
     def get(self, request):
@@ -90,29 +93,24 @@ class SerieDetailView(View):
 
 class CartView(LoginRequiredMixin, View):
     def get(self, request):
-        # ดึง ID ของหนังสือในตะกร้าจาก session
         cart_ids = request.session.get('cart', [])
         
-        # ดึงข้อมูลหนังสือที่อยู่ในตะกร้า
         books_in_cart = Book.objects.filter(id__in=cart_ids)
 
         context = {
             'books_in_cart': books_in_cart,
-            'cart_count': len(cart_ids),
         }
         return render(request, 'cart.html', context)
     
 class RemoveFromCartView(LoginRequiredMixin, View):
     def post(self, request, book_id):
-        # ดึง ID ของหนังสือที่ต้องการลบออกจากตะกร้า
         cart = request.session.get('cart', [])
         
-        # ถ้ามี ID ของหนังสือในตะกร้า ก็ลบออก
         if book_id in cart:
             cart.remove(book_id)
             request.session['cart'] = cart
 
-        return redirect('cart')  # เปลี่ยนเส้นทางไปที่หน้า Cart
+        return redirect('cart')
 
 class AddToCartView(LoginRequiredMixin, View):
     def post(self, request, book_id):
@@ -193,3 +191,52 @@ class AdminAddAuthorView(View):
                 'author_form': author_form,
             }
             return render(request, 'admin_add_author.html', context)
+class FavoriteView(LoginRequiredMixin, View):
+    def get(self, request):
+        # ดึงรายการโปรดของผู้ใช้
+        favorite_series = UserFavoriteSeries.objects.filter(user=request.user).select_related('series')
+
+        context = {
+            'favorite_series': favorite_series,
+        }
+
+        return render(request, 'favorites.html', context)
+
+class AddToFavoritesView(LoginRequiredMixin, View):
+    def post(self, request, series_id):
+        series = get_object_or_404(BookSeries, id=series_id)
+
+        # ตรวจสอบว่าซีรีส์อยู่ในรายการโปรดแล้วหรือไม่
+        if not UserFavoriteSeries.objects.filter(user=request.user, series=series).exists():
+            UserFavoriteSeries.objects.create(user=request.user, series=series)
+
+        return redirect('search')  # เปลี่ยนเส้นทางไปที่หน้า Favorites
+
+
+class RemoveFromFavoritesView(LoginRequiredMixin, View):
+    def post(self, request, series_id):
+        favorite = get_object_or_404(UserFavoriteSeries, user=request.user, series_id=series_id)
+        favorite.delete()
+
+        return redirect('favorites')
+    
+def notify_user_of_new_book(series, user):
+    message = f"มีหนังสือใหม่ในซีรีย์ '{series.title}': {series.books.last.title}"
+    Notification.objects.create(user=user, message=message)
+
+@receiver(post_save, sender=Book)
+def notify_users_of_new_book(sender, instance, created, **kwargs):
+    if created:
+        series = instance.series
+        followers = UserFavoriteSeries.objects.filter(series=series).values_list('user', flat=True)
+        for user_id in followers:
+            user = User.objects.get(id=user_id)
+            notify_user_of_new_book(series, user)
+
+class NotificationView(LoginRequiredMixin, View):
+    def get(self, request):
+        notifications = request.user.notifications.all().order_by('-created_at')
+        context = {
+            'notifications': notifications,
+        }
+        return render(request, 'notifications.html', context)

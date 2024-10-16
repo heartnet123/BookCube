@@ -1,0 +1,29 @@
+{% include 'nav.html' %}
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>การแจ้งเตือนของคุณ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+</head>
+<body class="bg-gray-900 text-white">
+    <div class="flex">
+        {% include 'side_nav.html' %}
+        <div class="ml-64 p-4 w-full">
+            <div class="flex items-center mb-4">
+                <h1 class="text-2xl font-semibold">การแจ้งเตือนของคุณ</h1>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <ul>
+                    {% for notification in notifications %}
+                        <li>{{ notification.message }} - {{ notification.created_at }}</li>
+                    {% empty %}
+                        <li>ไม่มีการแจ้งเตือน</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

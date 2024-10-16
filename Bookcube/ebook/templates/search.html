@@ -38,8 +38,12 @@
                                 <h2 class="text-xl font-semibold">{{ series.title }}</h2>
                             </div>
                             <div class="flex items-center text-gray-400 mb-2">
-                                <i class="fas fa-star mr-1"></i>
-                                <span class="mr-4">{{ series.rating }}</span>
+                                <div class="flex items-center text-gray-400 mb-2">
+                                    <form action="{% url 'add_to_favorites' series.id %}" method="post" class="flex items-center hover:text-white transition duration-200">
+                                        {% csrf_token %}
+                                        <button class="fas fa-star mr-1"></button>
+                                    </form>
+                                </div>
                             </div>
                             <div class="text-gray-400 text-sm mb-2">
                                 <span class="mr-2">ผู้แต่ง: {{ series.author.name }}</span>

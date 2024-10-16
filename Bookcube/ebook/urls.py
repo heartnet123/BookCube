@@ -14,4 +14,8 @@ urlpatterns = [
     path('manager_add_book/', AdminAddBookView.as_view(), name='admin_add_book'),
     path('manager_add_serie/', AdminAddSerieView.as_view(), name='admin_add_serie'),
     path('manager_add_author/', AdminAddAuthorView.as_view(), name='admin_add_author'),
+    path('favorites/', FavoriteView.as_view(), name='favorites'),
+    path('add_to_favorites/<int:series_id>/', AddToFavoritesView.as_view(), name='add_to_favorites'),
+    path('remove_from_favorites/<int:series_id>/', RemoveFromFavoritesView.as_view(), name='remove_from_favorites'),
+    path('notifications/', NotificationView.as_view(), name='notifications'),
 ]

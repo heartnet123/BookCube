@@ -11,12 +11,13 @@
             <div>
                 {% if user.is_authenticated %}
                     <span class="text-white">สวัสดี, {{ user.username }}</span>
+                    <a href="{% url 'cart' %}" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-gray-200">ตะกร้าของฉัน</a>
+                    <a href="{% url 'notifications' %}" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-gray-200">การแจ้งเตือน</a>
                     <a href="{% url 'logout' %}" class="bg-white text-indigo-600 px-4 py-2 rounded hover:bg-gray-200">ออกจากระบบ</a>
                 {% else %}
                     <a href="{% url 'login' %}" class="bg-white text-indigo-600 px-4 py-2 rounded hover:bg-gray-200">เข้าสู่ระบบ</a>
                     <a href="{% url 'register' %}" class="bg-white text-indigo-600 px-4 py-2 rounded hover:bg-gray-200">ลงทะเบียน</a>
                 {% endif %}
-                <a href="{% url 'cart' %}" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-gray-200">ตะกร้าของฉัน</a>
             </div>
         </div>
     </nav>
