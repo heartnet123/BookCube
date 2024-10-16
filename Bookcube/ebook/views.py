@@ -74,6 +74,7 @@ class SearchView(View):
             'series': series,
         }
         return render(request, 'search.html', context)
+    
 class StoreView(View):
     def get(self, request):
         context = {}
@@ -81,9 +82,10 @@ class StoreView(View):
         context['books'] = books
         if request.user.is_authenticated:
             completed_order_items = OrderItem.objects.filter(order__user=request.user, order__status='Completed')
+            completed_books = Book.objects.filter(orderitem__in=completed_order_items)
             context['completed_order_items'] = completed_order_items
+            context['completed_books'] = completed_books
             context['has_completed_orders'] = completed_order_items.exists()
-        
         return render(request, 'store.html', context)
 
 class SerieDetailView(View):
@@ -270,11 +272,6 @@ def checkout(request):
     }
     return render(request, 'check-out.html', context)
 
-from django.shortcuts import render, get_object_or_404
-from .models import Review, Book
-
-from django.shortcuts import render, get_object_or_404
-from .models import Book, Review
 
 class ReviewAPIView(APIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
