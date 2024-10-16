@@ -90,14 +90,22 @@ class SerieDetailView(View):
         series = get_object_or_404(BookSeries, id=series_id)
         categories = Category.objects.filter(book__series=series).distinct()
         
+        books = series.books.all()
+        
+        completed_books = []
+        if request.user.is_authenticated:
+            completed_order_items = OrderItem.objects.filter(order__user=request.user, order__status='Completed', book__in=books)
+            completed_books = completed_order_items.values_list('book', flat=True)
+
         context = {
             'series': series,
             'categories': categories,
+            'completed_books': completed_books,
         }
         return render(request, 'serie_detail.html', context)
-    
-    
 
+    
+    
 class CartView(LoginRequiredMixin, View):
     def get(self, request):
         cart, created = Cart.objects.get_or_create(user=request.user)  
