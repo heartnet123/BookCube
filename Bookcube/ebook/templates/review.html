@@ -1,0 +1,38 @@
+{% include 'nav.html' %}
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>การแจ้งเตือนของคุณ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+</head>
+<body class="bg-gray-900 text-white">
+    <div class="flex">
+        {% include 'side_nav.html' %}
+        <div class="ml-64 p-4 w-full">
+            <h1 class="text-2xl font-semibold">รีวิวของหนังสือเล่มนี้</h1>
+            <ul>
+                {% for review in reviews %}
+                    <li class="mb-4 p-4 border border-gray-700 rounded bg-gray-800">
+                        <strong>{{ user.username }}:</strong>
+                        <div class="flex items-center">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= review.rating %}
+                                    <i class="fas fa-star text-yellow-500"></i>
+                                {% else %}
+                                    <i class="far fa-star text-gray-400"></i>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <p>{{ review.content }}</p>
+                        <small>รีวิวเมื่อ {{ review.review_date }}</small>
+                    </li>
+                {% empty %}
+                    <li>ยังไม่มีรีวิวสำหรับหนังสือนี้</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

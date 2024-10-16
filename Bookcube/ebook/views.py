@@ -15,6 +15,9 @@ from django.contrib import messages
 from django.utils.decorators import method_decorator
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+import requests
+from .serializers import ReviewSerializer
+from rest_framework import generics
 
 
 class DashboardView(LoginRequiredMixin, View):
@@ -253,3 +256,37 @@ def checkout(request):
         'total': total,
     }
     return render(request, 'check-out.html', context)
+
+from django.shortcuts import render, get_object_or_404
+from .models import Review, Book
+
+from django.shortcuts import render, get_object_or_404
+from .models import Book, Review
+
+class BookReviewList(generics.ListCreateAPIView):
+    serializer_class = ReviewSerializer
+
+    def get_queryset(self):
+        book_id = self.kwargs['book_id']
+        return Review.objects.filter(book_id=book_id)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)  # บันทึกผู้ใช้ที่สร้างรีวิว
+
+class ReviewView(View):
+    def get(self, request, book_id):
+        # ดึงข้อมูลรีวิวจาก API
+        api_url = f'http://127.0.0.1:8000/api/book/{book_id}/reviews/'
+        response = requests.get(api_url)
+        
+        if response.status_code == 200:
+            reviews = response.json()
+        else:
+            reviews = []  # หากมีปัญหาการเรียก API
+
+        context = {
+            'book_id': book_id,
+            'reviews': reviews,
+        }
+        
+        return render(request, 'review.html', context)
