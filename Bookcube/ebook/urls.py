@@ -11,4 +11,7 @@ urlpatterns = [
     path('cart/', CartView.as_view(), name='cart'),
     path('add_to_cart/<int:book_id>/', AddToCartView.as_view(), name='add_to_cart'),
     path('remove_from_cart/<int:book_id>/', RemoveFromCartView.as_view(), name='remove_from_cart'),
+    path('manager_add_book/', AdminAddBookView.as_view(), name='admin_add_book'),
+    path('manager_add_serie/', AdminAddSerieView.as_view(), name='admin_add_serie'),
+    path('manager_add_author/', AdminAddAuthorView.as_view(), name='admin_add_author'),
 ]

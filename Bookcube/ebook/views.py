@@ -8,8 +8,11 @@ from django.views import View
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import *
+from .forms import *
 from django.db.models import Avg
-
+from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib import messages
+from django.utils.decorators import method_decorator
 
 class DashboardView(LoginRequiredMixin, View):
     def get(self, request):
@@ -121,3 +124,72 @@ class AddToCartView(LoginRequiredMixin, View):
             request.session['cart'] = cart
 
         return redirect('store')  # Redirect to your main page or wherever
+
+@method_decorator(staff_member_required, name='dispatch')
+class AdminAddBookView(View):
+    def get(self, request):
+        book_form = BookForm()
+        context = {
+            'book_form': book_form,
+        }
+        return render(request, 'admin_add_book.html', context)
+
+    def post(self, request):
+        book_form = BookForm(request.POST, request.FILES)
+        if book_form.is_valid():
+            book = book_form.save()
+            messages.success(request, 'เพิ่มหนังสือใหม่เรียบร้อยแล้ว')
+            return redirect('store')
+        else:
+            print(book_form.errors)  # เพิ่มบรรทัดนี้เพื่อแสดงข้อผิดพลาดในคอนโซล
+            messages.error(request, 'พบข้อผิดพลาดในการเพิ่มหนังสือ')
+            context = {
+                'book_form': book_form,
+            }
+            return render(request, 'admin_add_book.html', context)
+
+
+@method_decorator(staff_member_required, name='dispatch')
+class AdminAddSerieView(View):
+    def get(self, request):
+        series_form = SerieForm()
+        context = {
+            'series_form': series_form,
+        }
+        return render(request, 'admin_add_serie.html', context)
+
+    def post(self, request):
+        series_form = SerieForm(request.POST)
+        if series_form.is_valid():
+            series_form.save()
+            messages.success(request, 'เพิ่มซีรีส์ใหม่เรียบร้อยแล้ว')
+            return redirect('admin_add_book')  # เปลี่ยนเป็น URL ที่เหมาะสม
+        else:
+            messages.error(request, 'พบข้อผิดพลาดในการเพิ่มซีรีส์')
+            context = {
+                'series_form': series_form,
+            }
+            return render(request, 'admin_add_serie.html', context)
+        
+
+@method_decorator(staff_member_required, name='dispatch')
+class AdminAddAuthorView(View):
+    def get(self, request):
+        author_form = AuthorForm()
+        context = {
+            'author_form': author_form,
+        }
+        return render(request, 'admin_add_author.html', context)
+
+    def post(self, request):
+        author_form = AuthorForm(request.POST)
+        if author_form.is_valid():
+            author_form.save()
+            messages.success(request, 'เพิ่มผู้เขียนใหม่เรียบร้อยแล้ว')
+            return redirect('admin_add_serie')  # เปลี่ยนเป็น URL ที่เหมาะสม
+        else:
+            messages.error(request, 'พบข้อผิดพลาดในการเพิ่มผู้เขียน')
+            context = {
+                'author_form': author_form,
+            }
+            return render(request, 'admin_add_author.html', context)
