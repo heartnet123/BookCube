@@ -29,7 +29,7 @@
             <div class="grid grid-cols-2 gap-4">
                 {% for series in series %}
                 <div class="bg-gray-800 p-4 rounded flex">
-                    <a href="{% url 'dashboard' %}">
+                    <a href="{% url 'serie_detail' series.id %}">
                         <img alt="ภาพปก {{ series.title }}" class="w-36 h-48 mr-6" src="{{ series.books.last.cover_image.url }}"/>
                     </a>
                     <div class="flex flex-col justify-between w-full ml-2">
@@ -41,12 +41,17 @@
                                 <div class="flex items-center text-gray-400 mb-2">
                                     <form action="{% url 'add_to_favorites' series.id %}" method="post" class="flex items-center hover:text-white transition duration-200">
                                         {% csrf_token %}
-                                        <button class="fas fa-star mr-1"></button>
+                                        <button class="fas fa-star mr-1"> เพิ่มไปยังรายการโปรด </button>
                                     </form>
                                 </div>
                             </div>
                             <div class="text-gray-400 text-sm mb-2">
                                 <span class="mr-2">ผู้แต่ง: {{ series.author.name }}</span>
+                                <span class="mr-2">หมวดหมู่: 
+                                    {% for category in series.books.first.categories.all %}
+                                        {{ category.name }}{% if not forloop.last %}, {% endif %}
+                                    {% endfor %}
+                                </span>
                             </div>
                         </div>
                         <div class="self-end">

@@ -264,10 +264,10 @@ def checkout(request):
     if request.method == 'POST':
         subtotal = sum(item.book.price * item.quantity for item in cart_items)  
 
-        order = Order.objects.create(user=request.user, status='Completed')  # ไม่ต้องใส่ total ที่นี่
+        order = Order.objects.create(user=request.user, status='Completed')  
 
         for item in cart_items:
-            OrderItem.objects.create(order=order, book=item.book, quantity=item.quantity)
+            OrderItem.objects.create(order=order, book=item.book, quantity=item.quantity, price=item.book.price)
 
         cart.items.all().delete()
 
@@ -282,12 +282,6 @@ def checkout(request):
         'total': total,
     }
     return render(request, 'check-out.html', context)
-
-from django.views.generic import ListView
-from django.views.generic.edit import FormMixin
-from django.shortcuts import get_object_or_404, redirect
-from .models import Review, Book
-from .forms import ReviewForm
 
 class ReviewView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
