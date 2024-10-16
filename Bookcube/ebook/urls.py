@@ -14,4 +14,5 @@ urlpatterns = [
     path('favorites/', FavoriteView.as_view(), name='favorites'),
     path('add_to_favorites/<int:series_id>/', AddToFavoritesView.as_view(), name='add_to_favorites'),
     path('remove_from_favorites/<int:series_id>/', RemoveFromFavoritesView.as_view(), name='remove_from_favorites'),
+    path('notifications/', NotificationView.as_view(), name='notifications'),
 ]

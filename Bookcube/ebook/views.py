@@ -9,6 +9,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import *
 from django.db.models import Avg
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 class DashboardView(LoginRequiredMixin, View):
@@ -93,7 +95,6 @@ class CartView(LoginRequiredMixin, View):
 
         context = {
             'books_in_cart': books_in_cart,
-            'cart_count': len(cart_ids),
         }
         return render(request, 'cart.html', context)
     
@@ -146,3 +147,24 @@ class RemoveFromFavoritesView(LoginRequiredMixin, View):
         favorite.delete()
 
         return redirect('favorites')
+    
+def notify_user_of_new_book(series, user):
+    message = f"มีหนังสือใหม่ในซีรีย์ '{series.title}': {series.books.last.title}"
+    Notification.objects.create(user=user, message=message)
+
+@receiver(post_save, sender=Book)
+def notify_users_of_new_book(sender, instance, created, **kwargs):
+    if created:
+        series = instance.series
+        followers = UserFavoriteSeries.objects.filter(series=series).values_list('user', flat=True)
+        for user_id in followers:
+            user = User.objects.get(id=user_id)
+            notify_user_of_new_book(series, user)
+
+class NotificationView(LoginRequiredMixin, View):
+    def get(self, request):
+        notifications = request.user.notifications.all().order_by('-created_at')
+        context = {
+            'notifications': notifications,
+        }
+        return render(request, 'notifications.html', context)
