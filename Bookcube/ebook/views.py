@@ -93,10 +93,9 @@ class SerieDetailView(View):
 
 class CartView(LoginRequiredMixin, View):
     def get(self, request):
-        cart_ids = request.session.get('cart', [])
-        
-        books_in_cart = Book.objects.filter(id__in=cart_ids)
-
+        cart, created = Cart.objects.get_or_create(user=request.user)  
+        books_in_cart = cart.items.select_related('book')
+        # Add context for the template
         context = {
             'books_in_cart': books_in_cart,
         }
@@ -104,24 +103,23 @@ class CartView(LoginRequiredMixin, View):
     
 class RemoveFromCartView(LoginRequiredMixin, View):
     def post(self, request, book_id):
-        cart = request.session.get('cart', [])
+        cart = get_object_or_404(Cart, user=request.user)
+        cart_item = get_object_or_404(CartItem, cart=cart, book_id=book_id)
+        cart_item.delete()
         
-        if book_id in cart:
-            cart.remove(book_id)
-            request.session['cart'] = cart
-
         return redirect('cart')
 
 class AddToCartView(LoginRequiredMixin, View):
     def post(self, request, book_id):
-        book = Book.objects.get(id=book_id)
-        cart = request.session.get('cart', [])
-    
-        if book.id not in cart:
-            cart.append(book.id)
-            request.session['cart'] = cart
+        cart, created = Cart.objects.get_or_create(user=request.user)
+        book = get_object_or_404(Book, id=book_id)
 
-        return redirect('store')  # Redirect to your main page or wherever
+        cart_item, created = CartItem.objects.get_or_create(cart=cart, book=book)  
+        if not created:
+            cart_item.quantity += 1
+            cart_item.save()
+
+        return redirect('store')
 
 @method_decorator(staff_member_required, name='dispatch')
 class AdminAddBookView(View):
