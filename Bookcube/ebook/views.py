@@ -222,8 +222,11 @@ class RemoveFromFavoritesView(LoginRequiredMixin, View):
         return redirect('favorites')
     
 def notify_user_of_new_book(series, user):
-    message = f"มีหนังสือใหม่ในซีรีย์ '{series.title}': {series.books.last.title}"
-    Notification.objects.create(user=user, message=message)
+    # ตรวจสอบว่า series มีหนังสืออยู่หรือไม่
+    last_book = series.books.last()
+    if last_book:
+        message = f"มีหนังสือใหม่ในซีรีย์ '{series.title}': {last_book.title}"
+        Notification.objects.create(user=user, message=message)
 
 @receiver(post_save, sender=Book)
 def notify_users_of_new_book(sender, instance, created, **kwargs):
@@ -241,6 +244,7 @@ class NotificationView(LoginRequiredMixin, View):
             'notifications': notifications,
         }
         return render(request, 'notifications.html', context)
+
 
 @login_required
 def checkout(request):

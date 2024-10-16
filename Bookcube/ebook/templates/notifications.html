@@ -1,4 +1,5 @@
 {% include 'nav.html' %}
+{% include 'side_nav.html' %}
 <html lang="th">
 <head>
     <meta charset="UTF-8">
@@ -14,12 +15,18 @@
             <div class="flex items-center mb-4">
                 <h1 class="text-2xl font-semibold">การแจ้งเตือนของคุณ</h1>
             </div>
-            <div class="grid grid-cols-2 gap-4">
-                <ul>
+            <div class="bg-gray-800 p-4 rounded-lg">
+                <ul class="space-y-4">
                     {% for notification in notifications %}
-                        <li>{{ notification.message }} - {{ notification.created_at }}</li>
+                        <li class="bg-gray-700 p-4 rounded-lg flex items-center justify-between">
+                            <div>
+                                <p>{{ notification.message }}</p>
+                                <p class="text-sm text-gray-400">{{ notification.created_at|date:"d/m/Y H:i" }}</p>
+                            </div>
+                            <i class="fas fa-bell text-yellow-400"></i>
+                        </li>
                     {% empty %}
-                        <li>ไม่มีการแจ้งเตือน</li>
+                        <li class="text-center">ไม่มีการแจ้งเตือน</li>
                     {% endfor %}
                 </ul>
             </div>
