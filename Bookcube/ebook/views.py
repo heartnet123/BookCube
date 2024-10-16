@@ -308,3 +308,50 @@ class ReviewAPIView(APIView):
         review = get_object_or_404(Review, id=kwargs['review_id'], user=request.user)
         review.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+@method_decorator(staff_member_required, name='dispatch')
+class ManageBookView(View):
+    def get(self, request):
+        books = Book.objects.all()
+        context = {
+            'books': books
+        }
+        return render(request, 'manage_book.html', context)
+
+@method_decorator(staff_member_required, name='dispatch')
+class AdminEditBookView(View):
+    def get(self, request, book_id):
+        # Get the book object based on the ID
+        book = get_object_or_404(Book, id=book_id)
+        # Initialize the form with the book instance
+        form = BookFormEdit(instance=book)
+        context = {
+            'form': form,
+            'book': book,
+        }
+        return render(request, 'admin_edit_book.html', context)
+
+    def post(self, request, book_id):
+        # Get the book object based on the ID
+        book = get_object_or_404(Book, id=book_id)
+        # Initialize the form with POST data and the book instance
+        form = BookFormEdit(request.POST, request.FILES, instance=book)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'แก้ไขข้อมูลหนังสือเรียบร้อยแล้ว')
+            return redirect('manage_book')
+        else:
+            messages.error(request, 'พบข้อผิดพลาดในการแก้ไขข้อมูลหนังสือ')
+        context = {
+            'form': form,
+            'book': book,
+        }
+        return render(request, 'admin_edit_book.html', context)
+
+@method_decorator(staff_member_required, name='dispatch')
+class DeleteBookView(View):
+    def post(self, request, book_id):
+        book = get_object_or_404(Book, id=book_id)
+        book.delete()
+        messages.success(request, 'ลบหนังสือเรียบร้อยแล้ว')
+        return redirect('manage_book')

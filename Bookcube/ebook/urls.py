@@ -22,4 +22,7 @@ urlpatterns = [
     path('checkout/', views.checkout, name='checkout'),
     path('reviews/<int:book_id>/', ReviewAPIView.as_view(), name='review-list'),  # GET และ POST
     path('reviews/<int:review_id>/delete/', ReviewAPIView.as_view(), name='review-delete'),  # DELETE
+    path('manage_book/', ManageBookView.as_view(), name='manage_book'),
+    path('edit_book/<int:book_id>/', AdminEditBookView.as_view(), name='admin_edit_book'),
+    path('delete_book/<int:book_id>/', DeleteBookView.as_view(), name='delete_book'),
 ]
