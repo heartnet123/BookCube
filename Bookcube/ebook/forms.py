@@ -26,3 +26,20 @@ class AuthorForm(forms.ModelForm):
     class Meta:
         model = Author
         fields = ['name']
+
+class ReviewForm(forms.ModelForm):
+    class Meta:
+        model = Review
+        fields = ['content', 'rating']  # กำหนดฟิลด์ที่ต้องการให้แสดงในฟอร์ม
+        widgets = {
+            'content': forms.Textarea(attrs={'placeholder': 'เขียนรีวิวที่นี่...', 'rows': 4, 'class': 'form-textarea'}),
+            'rating': forms.Select(choices=[(i, i) for i in range(1, 6)], attrs={'class': 'form-select'}),
+        }
+        labels = {
+            'content': 'เนื้อหารีวิว',
+            'rating': 'คะแนน',
+        }
+        help_texts = {
+            'content': 'กรุณาให้รายละเอียดเกี่ยวกับหนังสือเล่มนี้',
+            'rating': 'เลือกคะแนนจาก 1 ถึง 5'
+        }

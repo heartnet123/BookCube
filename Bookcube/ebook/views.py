@@ -16,12 +16,8 @@ from django.utils.decorators import method_decorator
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 import requests
-from .serializers import ReviewSerializer
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
-from django.http import JsonResponse
+from django.views.generic import ListView
+from django.views.generic.edit import FormMixin
 
 
 class DashboardView(LoginRequiredMixin, View):
@@ -285,26 +281,36 @@ def checkout(request):
     }
     return render(request, 'check-out.html', context)
 
+from django.views.generic import ListView
+from django.views.generic.edit import FormMixin
+from django.shortcuts import get_object_or_404, redirect
+from .models import Review, Book
+from .forms import ReviewForm
 
-class ReviewAPIView(APIView):
-    permission_classes = [IsAuthenticatedOrReadOnly]
-
+class ReviewView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        # ดึงรีวิว
-        reviews = Review.objects.filter(book_id=kwargs['book_id'])
-        serializer = ReviewSerializer(reviews, many=True)
-        return Response(serializer.data)
+        book = get_object_or_404(Book, pk=self.kwargs['book_id'])
+        reviews = Review.objects.filter(book=book).order_by('-review_date')
+        
+        context = {
+            'book': book,
+            'reviews': reviews,
+        }
+        return render(request, 'review.html', context)
+    
+class FormReviewView(View):
+    def get(self, request, book_id):
+        book = get_object_or_404(Book, pk=book_id)
+        form = ReviewForm()
+        return render(request, 'form_review.html', {'form': form, 'book': book})
 
-    def post(self, request):
-        # เพิ่มรีวิว
-        serializer = ReviewSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save(user=request.user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, *args, **kwargs):
-        # ลบรีวิว (ถ้าต้องการ)
-        review = get_object_or_404(Review, id=kwargs['review_id'], user=request.user)
-        review.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    def post(self, request, book_id):
+        book = get_object_or_404(Book, pk=book_id)
+        form = ReviewForm(request.POST)
+            
+        if form.is_valid():
+            review = form.save(commit=False)
+            review.book = book
+            review.user = request.user
+            review.save()
+            return redirect('reviews', book_id=book.id)
