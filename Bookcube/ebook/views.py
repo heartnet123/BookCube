@@ -17,7 +17,10 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 import requests
 from .serializers import ReviewSerializer
-from rest_framework import generics
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 
 class DashboardView(LoginRequiredMixin, View):
@@ -267,30 +270,25 @@ from .models import Review, Book
 from django.shortcuts import render, get_object_or_404
 from .models import Book, Review
 
-class BookReviewList(generics.ListCreateAPIView):
-    serializer_class = ReviewSerializer
+class ReviewAPIView(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
-    def get_queryset(self):
-        book_id = self.kwargs['book_id']
-        return Review.objects.filter(book_id=book_id)
+    def get(self, request, *args, **kwargs):
+        # ดึงรีวิว
+        reviews = Review.objects.filter(book_id=kwargs['book_id'])
+        serializer = ReviewSerializer(reviews, many=True)
+        return Response(serializer.data)
 
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)  # บันทึกผู้ใช้ที่สร้างรีวิว
+    def post(self, request):
+        # เพิ่มรีวิว
+        serializer = ReviewSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(user=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class ReviewView(View):
-    def get(self, request, book_id):
-        # ดึงข้อมูลรีวิวจาก API
-        api_url = f'http://127.0.0.1:8000/api/book/{book_id}/reviews/'
-        response = requests.get(api_url)
-        
-        if response.status_code == 200:
-            reviews = response.json()
-        else:
-            reviews = []  # หากมีปัญหาการเรียก API
-
-        context = {
-            'book_id': book_id,
-            'reviews': reviews,
-        }
-        
-        return render(request, 'review.html', context)
+    def delete(self, request, *args, **kwargs):
+        # ลบรีวิว (ถ้าต้องการ)
+        review = get_object_or_404(Review, id=kwargs['review_id'], user=request.user)
+        review.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

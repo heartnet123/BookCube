@@ -20,6 +20,6 @@ urlpatterns = [
     path('remove_from_favorites/<int:series_id>/', RemoveFromFavoritesView.as_view(), name='remove_from_favorites'),
     path('notifications/', NotificationView.as_view(), name='notifications'),
     path('checkout/', views.checkout, name='checkout'),
-    path('book/<int:book_id>/reviews/', ReviewView.as_view(), name='book_reviews_page'),
-    path('api/book/<int:book_id>/reviews/', BookReviewList.as_view(), name='book_reviews'),
+    path('reviews/<int:book_id>/', ReviewAPIView.as_view(), name='review-list'),  # GET และ POST
+    path('reviews/<int:review_id>/delete/', ReviewAPIView.as_view(), name='review-delete'),  # DELETE
 ]
