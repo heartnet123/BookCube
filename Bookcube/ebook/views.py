@@ -92,9 +92,11 @@ class StoreView(View):
 class SerieDetailView(View):
     def get(self, request, series_id):
         series = get_object_or_404(BookSeries, id=series_id)
+        categories = Category.objects.filter(book__series=series).distinct()
         
         context = {
             'series': series,
+            'categories': categories,
         }
         return render(request, 'serie_detail.html', context)
     
