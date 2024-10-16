@@ -21,6 +21,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from django.http import JsonResponse
 
 
 class DashboardView(LoginRequiredMixin, View):
@@ -255,6 +256,18 @@ class NotificationView(LoginRequiredMixin, View):
 def checkout(request):
     cart, created = Cart.objects.get_or_create(user=request.user)  
     cart_items = cart.items.all()
+
+    if request.method == 'POST':
+        subtotal = sum(item.book.price * item.quantity for item in cart_items)  
+
+        order = Order.objects.create(user=request.user, status='Completed')  # ไม่ต้องใส่ total ที่นี่
+
+        for item in cart_items:
+            OrderItem.objects.create(order=order, book=item.book, quantity=item.quantity)
+
+        cart.items.all().delete()
+
+        return redirect('dashboard')
 
     subtotal = sum(item.book.price * item.quantity for item in cart_items)  
     total = subtotal
