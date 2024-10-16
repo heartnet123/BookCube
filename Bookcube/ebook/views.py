@@ -111,7 +111,13 @@ class RemoveFromCartView(LoginRequiredMixin, View):
     def post(self, request, book_id):
         cart = get_object_or_404(Cart, user=request.user)
         cart_item = get_object_or_404(CartItem, cart=cart, book_id=book_id)
-        cart_item.delete()
+
+        if cart_item.quantity > 1:
+            cart_item.quantity -= 1
+            cart_item.save()
+        else:
+            cart_item.delete()
+
         
         return redirect('cart')
 
