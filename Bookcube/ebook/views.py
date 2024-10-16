@@ -75,6 +75,7 @@ class SearchView(View):
             'series': series,
         }
         return render(request, 'search.html', context)
+    
 class StoreView(View):
     def get(self, request):
         context = {}
@@ -82,9 +83,10 @@ class StoreView(View):
         context['books'] = books
         if request.user.is_authenticated:
             completed_order_items = OrderItem.objects.filter(order__user=request.user, order__status='Completed')
+            completed_books = Book.objects.filter(orderitem__in=completed_order_items)
             context['completed_order_items'] = completed_order_items
+            context['completed_books'] = completed_books
             context['has_completed_orders'] = completed_order_items.exists()
-        
         return render(request, 'store.html', context)
 
 class SerieDetailView(View):
@@ -232,8 +234,11 @@ class RemoveFromFavoritesView(LoginRequiredMixin, View):
         return redirect('favorites')
     
 def notify_user_of_new_book(series, user):
-    message = f"มีหนังสือใหม่ในซีรีย์ '{series.title}': {series.books.last.title}"
-    Notification.objects.create(user=user, message=message)
+    # ตรวจสอบว่า series มีหนังสืออยู่หรือไม่
+    last_book = series.books.last()
+    if last_book:
+        message = f"มีหนังสือใหม่ในซีรีย์ '{series.title}': {last_book.title}"
+        Notification.objects.create(user=user, message=message)
 
 @receiver(post_save, sender=Book)
 def notify_users_of_new_book(sender, instance, created, **kwargs):
@@ -251,6 +256,7 @@ class NotificationView(LoginRequiredMixin, View):
             'notifications': notifications,
         }
         return render(request, 'notifications.html', context)
+
 
 @login_required
 def checkout(request):
@@ -279,11 +285,6 @@ def checkout(request):
     }
     return render(request, 'check-out.html', context)
 
-from django.shortcuts import render, get_object_or_404
-from .models import Review, Book
-
-from django.shortcuts import render, get_object_or_404
-from .models import Book, Review
 
 class ReviewAPIView(APIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
