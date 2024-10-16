@@ -27,15 +27,19 @@ class AuthorForm(forms.ModelForm):
         model = Author
         fields = ['name']
 
-class BookFormEdit(forms.ModelForm):
+class ReviewForm(forms.ModelForm):
     class Meta:
-        model = Book
-        fields = ['title', 'series', 'volume_number', 'published_date',
-                  'cover_image', 'price', 'categories', 'ebook_file']
-
-    def __init__(self, *args, **kwargs):
-        super(BookFormEdit, self).__init__(*args, **kwargs)
-        self.fields['categories'].widget = forms.CheckboxSelectMultiple()
-        self.fields['categories'].queryset = Category.objects.all()
-        self.fields['series'].queryset = BookSeries.objects.all()
-        self.fields['published_date'].widget = DateInput(attrs={'type': 'date'})
+        model = Review
+        fields = ['content', 'rating']  # กำหนดฟิลด์ที่ต้องการให้แสดงในฟอร์ม
+        widgets = {
+            'content': forms.Textarea(attrs={'placeholder': 'เขียนรีวิวที่นี่...', 'rows': 4, 'class': 'form-textarea'}),
+            'rating': forms.Select(choices=[(i, i) for i in range(1, 6)], attrs={'class': 'form-select'}),
+        }
+        labels = {
+            'content': 'เนื้อหารีวิว',
+            'rating': 'คะแนน',
+        }
+        help_texts = {
+            'content': 'กรุณาให้รายละเอียดเกี่ยวกับหนังสือเล่มนี้',
+            'rating': 'เลือกคะแนนจาก 1 ถึง 5'
+        }

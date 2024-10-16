@@ -11,11 +11,36 @@
     <div class="flex">
         {% include 'side_nav.html' %}
         <div class="ml-64 p-4 w-full">
-            <h1 class="text-2xl font-semibold mb-6">รีวิวของหนังสือเล่มนี้</h1>
-            <ul id="reviews-container">
-                <!-- Reviews will be loaded here dynamically -->
+            <h1 class="text-2xl font-semibold mb-6">รีวิวสำหรับ "{{ book.title }}"</h1>
+            <ul id="reviews-container" class="space-y-4">
+                {% for review in reviews %}
+                    <li class="bg-gray-800 p-4 rounded-lg shadow-md">
+                        <strong class="text-lg">{{ review.user.username }}</strong>
+                        <div class="mt-2">
+                            {% for i in "*****" %}
+                                {% if forloop.counter <= review.rating %}
+                                    <i class="fas fa-star text-yellow-400"></i>
+                                {% else %}
+                                    <i class="far fa-star text-gray-400"></i>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <p class="mt-2">{{ review.content }}</p>
+                        <span class="block mt-2 text-gray-400">{{ review.review_date|date:"d/m/Y H:i" }}</span>
+                    </li>
+                {% empty %}
+                    <li class="bg-gray-800 p-4 rounded-lg shadow-md">
+                        ยังไม่มีรีวิวสำหรับหนังสือเล่มนี้
+                    </li>
+                {% endfor %}
             </ul>
+
+            <h2 class="text-xl font-semibold mt-8 mb-4">เพิ่มรีวิวของคุณ</h2>
+            <a href="{% url 'form_review' book.id %}" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                เพิ่มรีวิว
+            </a>
         </div>
     </div>
 </body>
 </html>
+

@@ -1,0 +1,37 @@
+{% include 'nav.html' %}
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เพิ่มรีวิวหนังสือ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white">
+    <div class="flex">
+        {% include 'side_nav.html' %}
+        <div class="ml-64 p-4 w-full">
+            <h1 class="text-2xl font-semibold mb-6">เพิ่มรีวิวสำหรับ "{{ book.title }}"</h1>
+            <form method="post" class="bg-gray-800 p-6 rounded-lg shadow-md">
+                {% csrf_token %}
+                <div class="mb-4">
+                    <label for="rating" class="block text-sm font-medium">คะแนน:</label>
+                    <select name="rating" id="rating" class="mt-1 block w-full p-2 bg-gray-700 border border-gray-600 rounded">
+                        <option value="1">1 ดาว</option>
+                        <option value="2">2 ดาว</option>
+                        <option value="3">3 ดาว</option>
+                        <option value="4">4 ดาว</option>
+                        <option value="5">5 ดาว</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label for="content" class="block text-sm font-medium">รีวิวของคุณ:</label>
+                    <textarea name="content" id="content" rows="4" class="mt-1 block w-full p-2 bg-gray-700 border border-gray-600 rounded" required></textarea>
+                </div>
+                <button type="submit" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    ส่งรีวิว
+                </button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
