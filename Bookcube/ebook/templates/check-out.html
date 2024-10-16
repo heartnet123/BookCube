@@ -28,8 +28,8 @@
       };
     </script>
   </head>
-  <body class="min-h-screen bg-purple-900 text-purple-50 flex items-center justify-center p-4">
-    <div class="w-full max-w-md bg-purple-800 rounded-lg shadow-xl overflow-hidden">
+  <body class="min-h-screen bg-gray-900 text-gray-100 flex items-center justify-center p-4">
+    <div class="w-full max-w-md bg-gray-800 rounded-lg shadow-xl overflow-hidden">
       <div class="p-8">
         <h2 class="text-2xl font-bold mb-6">สรุปการสั่งซื้อ</h2>
         <div class="space-y-4 mb-6">
@@ -42,14 +42,14 @@
               />
               <div>
                 <h3 class="font-semibold">{{ item.book.title }}</h3>
-                <p class="text-sm text-purple-300">จำนวน: {{ item.quantity }}</p>
+                <p class="text-sm text-gray-400">จำนวน: {{ item.quantity }}</p>
               </div>
             </div>
             <span class="font-semibold">{{ item.book.price|floatformat:2 }} บาท</span>
           </div>
           {% endfor %}
         </div>
-        <div class="border-t border-purple-700 pt-4 space-y-2">
+        <div class="border-t border-gray-700 pt-4 space-y-2">
           <div class="flex justify-between">
             <span>ยอดรวม</span>
             <span>{{ subtotal|floatformat:2 }} บาท</span>
@@ -62,7 +62,7 @@
         <div class="flex justify-center mt-6">
           <form action="{% url 'checkout' %}" method="POST">
             {% csrf_token %}
-            <button type="submit" class="bg-purple-600 hover:bg-purple-500 text-white font-bold py-2 px-4 rounded">
+            <button class="w-full bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 px-4 rounded-lg mt-6 transition duration-300">
               ชำระเงิน
             </button>
           </form>
