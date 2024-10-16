@@ -22,4 +22,7 @@ urlpatterns = [
     path('checkout/', views.checkout, name='checkout'),
     path('book/<int:book_id>/reviews/', ReviewView.as_view(), name='reviews'),
     path('form_review/<int:book_id>/', FormReviewView.as_view(), name='form_review'),
+    path('manage_books/', ManageBookView.as_view(), name='manage_book'),
+    path('edit_book/<int:book_id>/', EditBookView.as_view(), name='admin_edit_book'),
+    path('delete_book/<int:book_id>/', DeleteBookView.as_view(), name='delete_book'),
 ]

@@ -316,3 +316,46 @@ class FormReviewView(View):
             review.user = request.user
             review.save()
             return redirect('reviews', book_id=book.id)
+
+
+class ManageBookView(View):
+    def get(self, request):
+        books = Book.objects.all()
+        context = {
+            'books': books
+        }
+        return render(request, 'manage_book.html', context)
+
+
+class EditBookView(View):
+    def get(self, request, book_id):
+        book = get_object_or_404(Book, id=book_id)
+        form = BookForm(instance=book)
+        context = {
+            'form': form,
+            'book': book
+        }
+        return render(request, 'edit_book.html', context)
+
+    def post(self, request, book_id):
+        book = get_object_or_404(Book, id=book_id)
+        form = BookForm(request.POST, request.FILES, instance=book)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'แก้ไขหนังสือเรียบร้อยแล้ว')
+            return redirect('manage_book')
+        else:
+            messages.error(request, 'พบข้อผิดพลาดในการแก้ไขหนังสือ')
+        context = {
+            'form': form,
+            'book': book
+        }
+        return render(request, 'edit_book.html', context)
+
+
+class DeleteBookView(View):
+    def post(self, request, book_id):
+        book = get_object_or_404(Book, id=book_id)
+        book.delete()
+        messages.success(request, 'ลบหนังสือเรียบร้อยแล้ว')
+        return redirect('manage_book')
