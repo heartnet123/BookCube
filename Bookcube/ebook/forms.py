@@ -30,7 +30,7 @@ class BookForm(forms.ModelForm):
         volume_number = cleaned_data.get('volume_number')
 
         if volume_number is not None and volume_number < 1:
-            self.add_error('volume_number', "Volume number must be at least 1.")
+            raise forms.ValidationError("Volume number must be at least 1.")
 
         return cleaned_data
 

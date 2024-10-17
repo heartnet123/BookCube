@@ -6,38 +6,71 @@
             <h1 class="text-2xl font-bold mb-6 text-center text-white">เพิ่มหนังสือ</h1>
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
+                <!-- แสดงข้อผิดพลาดที่ไม่เกี่ยวข้องกับฟิลด์ใด ๆ -->
+                {% if book_form.non_field_errors %}
+                    <div class="mb-4 text-red-500">
+                        {{ book_form.non_field_errors }}
+                    </div>
+                {% endif %}
                 <div class="mb-4">
                     <label for="id_title" class="block text-gray-400">ชื่อหนังสือ</label>
                     {{ book_form.title }}
+                    {% if book_form.title.errors %}
+                        <div class="text-red-500 mt-1">{{ book_form.title.errors }}</div>
+                    {% endif %}
                 </div>
                 <div class="mb-4">
                     <label for="id_series" class="block text-gray-400">ซีรี่ย์</label>
                     {{ book_form.series }}
+                    {% if book_form.series.errors %}
+                        <div class="text-red-500 mt-1">{{ book_form.series.errors }}</div>
+                    {% endif %}
                     <a href="{% url 'admin_add_serie' %}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mt-2 inline-block">เพิ่มซีรีส์ใหม่</a>
                 </div>
                 <div class="mb-4">
                     <label for="id_volume_number" class="block text-gray-400">เล่มที่</label>
                     {{ book_form.volume_number }}
+                    {% if book_form.volume_number.errors %}
+                        <div class="text-red-500 mt-1">{{ book_form.volume_number.errors }}</div>
+                    {% endif %}
                 </div>
                 <div class="mb-4">
                     <label for="id_published_date" class="block text-gray-400">วันที่เผยแพร่</label>
                     {{ book_form.published_date }}
+                    {% if book_form.published_date.errors %}
+                        <div class="text-red-500 mt-1">{{ book_form.published_date.errors }}</div>
+                    {% endif %}
                 </div>
                 <div class="mb-4">
                     <label for="id_cover_image" class="block text-gray-400">ภาพปก</label>
+                    {% if book_form.instance.cover_image %}
+                        <img src="{{ book_form.instance.cover_image.url }}" alt="ปกหนังสือ" class="mb-2 w-32 h-48 object-cover">
+                    {% endif %}
                     {{ book_form.cover_image }}
+                    {% if book_form.cover_image.errors %}
+                        <div class="text-red-500 mt-1">{{ book_form.cover_image.errors }}</div>
+                    {% endif %}
                 </div>
                 <div class="mb-4">
                     <label for="id_price" class="block text-gray-400">ราคา</label>
                     {{ book_form.price }}
+                    {% if book_form.price.errors %}
+                        <div class="text-red-500 mt-1">{{ book_form.price.errors }}</div>
+                    {% endif %}
                 </div>
                 <div class="mb-4">
                     <label for="id_categories" class="block text-gray-400">ประเภท</label>
                     {{ book_form.categories }}
+                    {% if book_form.categories.errors %}
+                        <div class="text-red-500 mt-1">{{ book_form.categories.errors }}</div>
+                    {% endif %}
                 </div>
                 <div class="mb-4">
                     <label for="id_ebook_file" class="block text-gray-400">ไฟล์หนังสืออิเล็กทรอนิกส์</label>
                     {{ book_form.ebook_file }}
+                    {% if book_form.ebook_file.errors %}
+                        <div class="text-red-500 mt-1">{{ book_form.ebook_file.errors }}</div>
+                    {% endif %}
                 </div>
                 <div class="flex justify-center mt-6">
                     <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300">เพิ่ม</button>
