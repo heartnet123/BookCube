@@ -337,7 +337,7 @@ class EditBookView(View):
             'form': form,
             'book': book
         }
-        return render(request, 'edit_book.html', context)
+        return render(request, 'admin_edit_book.html', context)
 
     def post(self, request, book_id):
         book = get_object_or_404(Book, id=book_id)
@@ -352,7 +352,7 @@ class EditBookView(View):
             'form': form,
             'book': book
         }
-        return render(request, 'edit_book.html', context)
+        return render(request, 'admin_edit_book.html', context)
 
 
 class DeleteBookView(View):
