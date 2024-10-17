@@ -16,8 +16,6 @@ from django.utils.decorators import method_decorator
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 import requests
-from django.views.generic import ListView
-from django.views.generic.edit import FormMixin
 
 
 class DashboardView(LoginRequiredMixin, View):

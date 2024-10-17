@@ -4,44 +4,55 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <title>ร้านหนังสือ</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ร้านหนังสือ - BookCube</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body class="bg-gray-900 text-white">
-    <div class="ml-64 p-4 w-full">
-        <h1 class="text-2xl font-semibold">โดดเด่น</h1>
-        <ul class="grid grid-cols-5 gap-6">
+<body class="bg-gray-900 text-gray-100">
+    <div class="ml-64 p-8">
+        <h1 class="text-4xl font-bold mb-8 text-white-400">หนังสือแนะนำ</h1>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8">
             {% for book in books %}
-                <li class="w-full">
-                    <div class="bg-gray-800 p-4 rounded mb-4 w-full mt-4">
-                        <img src="{{ book.cover_image.url }}" alt="ปกหนังสือของ {{ book.title }}" class="w-full h-48 object-cover mb-4 rounded">
-                        <h2 class="text-xl font-semibold">{{ book.title }}</h2>
-                        <p>ผู้เขียน: {{ book.series.author.name }}</p>
-                        <p>ราคา: {{ book.price }} บาท</p>
-                        <div class="mt-4">
+                <div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden transform transition duration-300 hover:scale-105">
+                    <img src="{{ book.cover_image.url }}" alt="ปกหนังสือของ {{ book.title }}" class="w-full h-64 object-cover">
+                    <div class="p-6">
+                        <h2 class="text-xl font-semibold mb-2 text-white-400">{{ book.title }}</h2>
+                        <p class="text-gray-400 mb-2">โดย {{ book.series.author.name }}</p>
+                        <p class="text-2xl font-bold text-green-400 mb-4">{{ book.price }} บาท</p>
+                        <div class="flex flex-col space-y-2">
                             {% if user.is_authenticated %}
                                 {% if book in completed_books %}
-                                    <div class="flex flex-col">
-                                        <p class="text-green-500">มีในคลังของคุณแล้ว</p>
-                                        <a href="{% url 'reviews' book.id %}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300">ดูรีวิว</a>
-                                    </div>
+                                    <p class="text-green-500 font-semibold">มีในคลังของคุณแล้ว</p>
+                                    <a href="{% url 'reviews' book.id %}" class="bg-blue-600 text-white px-4 py-2 rounded-full text-center hover:bg-blue-700 transition duration-300">ดูรีวิว</a>
                                 {% else %}
-                                    <form action="{% url 'add_to_cart' book.id %}" method="post" class="inline">
+                                    <form action="{% url 'add_to_cart' book.id %}" method="post" class="w-full">
                                         {% csrf_token %}
-                                        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300">เพิ่มเข้าตะกร้า</button>
+                                        <button type="submit" class="w-full bg-yellow-500 text-gray-900 px-4 py-2 rounded-full font-semibold hover:bg-yellow-400 transition duration-300">เพิ่มเข้าตะกร้า</button>
                                     </form>
-                                    <a href="{% url 'reviews' book.id %}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300">ดูรีวิว</a>
-                                    
+                                    <a href="{% url 'reviews' book.id %}" class="bg-blue-600 text-white px-4 py-2 rounded-full text-center hover:bg-blue-700 transition duration-300">ดูรีวิว</a>
                                 {% endif %}
                             {% else %}
-                                <p>กรุณาเข้าสู่ระบบเพื่อซื้อหนังสือ</p>
+                                <p class="text-gray-400 text-center">กรุณาเข้าสู่ระบบเพื่อซื้อหนังสือ</p>
                             {% endif %}
                         </div>
                     </div>
-                </li>
+                </div>
             {% empty %}
-                <li>ไม่มีหนังสือในระบบ</li>
+                <div class="col-span-full text-center text-gray-400 text-xl">
+                    <p>ขออภัย ไม่มีหนังสือในระบบขณะนี้</p>
+                </div>
             {% endfor %}
-        </ul>
+        </div>
     </div>
+    <script>
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
 </body>
 </html>

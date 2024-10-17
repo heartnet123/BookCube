@@ -1,11 +1,13 @@
 {% include 'nav.html' %}
 {% include 'side_nav.html' %}
+<!DOCTYPE html>
 <html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>อ่าน E-book - {{ book.title }}</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.3/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
     <style>
         body, html {
             margin: 0;
@@ -22,12 +24,13 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            background-color: #333;
+            background-color: #1a202c;
         }
         .page-canvas {
             max-width: 100%;
             max-height: 100%;
             object-fit: contain;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         .controls {
             position: fixed;
@@ -35,18 +38,44 @@
             left: 50%;
             transform: translateX(-50%);
             z-index: 1000;
-            background-color: rgba(255, 255, 255, 0.7);
-            padding: 10px;
-            border-radius: 5px;
+            background-color: rgba(26, 32, 44, 0.8);
+            padding: 10px 20px;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        .controls:hover {
+            background-color: rgba(26, 32, 44, 0.95);
+        }
+        .btn {
+            background-color: #4a5568;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 9999px;
+            margin: 0 5px;
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            background-color: #2d3748;
+            transform: translateY(-2px);
+        }
+        .btn:active {
+            transform: translateY(0);
+        }
+        #page-num {
+            color: white;
+            margin: 0 10px;
         }
     </style>
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-900 text-gray-100">
     <div id="pdf-viewer"></div>
     <div class="controls">
-        <button id="prev" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">ก่อนหน้า</button>
-        <button id="next" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">ถัดไป</button>
-        <select id="view-mode" class="bg-white border border-gray-300 rounded px-2 py-1">
+        <button id="prev" class="btn"><i class="fas fa-chevron-left mr-2"></i>ก่อนหน้า</button>
+        <span id="page-num" class="text-sm"></span>
+        <button id="next" class="btn">ถัดไป<i class="fas fa-chevron-right ml-2"></i></button>
+        <select id="view-mode" class="bg-gray-700 text-white border border-gray-600 rounded-full px-3 py-1 ml-4 focus:outline-none focus:ring-2 focus:ring-blue-500">
             <option value="1">1 หน้า</option>
             <option value="2">2 หน้า</option>
         </select>
@@ -78,10 +107,9 @@
                 const container = document.getElementById('pdf-viewer');
                 const containerRect = container.getBoundingClientRect();
 
-                // คำนวณ scale ที่เหมาะสมเพื่อให้ PDF พอดีกับหน้าจอ
                 const scaleX = containerRect.width / viewport.width;
                 const scaleY = containerRect.height / viewport.height;
-                scale = Math.min(scaleX, scaleY);
+                scale = Math.min(scaleX, scaleY) * 0.9;
 
                 const scaledViewport = page.getViewport({ scale: scale });
 
@@ -101,6 +129,7 @@
                         renderPage(pageNumPending);
                         pageNumPending = null;
                     }
+                    updatePageNum();
                 });
             });
 
@@ -148,6 +177,10 @@
             queueRenderPage(pageNum);
         }
 
+        function updatePageNum() {
+            document.getElementById('page-num').textContent = `หน้า ${pageNum} จาก ${pdfDoc.numPages}`;
+        }
+
         document.getElementById('prev').addEventListener('click', onPrevPage);
         document.getElementById('next').addEventListener('click', onNextPage);
         document.getElementById('view-mode').addEventListener('change', function() {
@@ -160,7 +193,6 @@
             renderPage(pageNum);
         });
 
-        // เพิ่มการรีเรนเดอร์เมื่อขนาดหน้าจอเปลี่ยน
         window.addEventListener('resize', function() {
             renderPage(pageNum);
         });

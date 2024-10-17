@@ -8,12 +8,16 @@ class BookForm(forms.ModelForm):
         fields = ['title', 'series', 'volume_number', 'published_date',
                   'cover_image', 'price', 'categories', 'ebook_file']
 
-    def __init__(self, *args, **kwargs):
-        super(BookForm, self).__init__(*args, **kwargs)
-        self.fields['categories'].widget = forms.CheckboxSelectMultiple()
-        self.fields['categories'].queryset = Category.objects.all()
-        self.fields['series'].queryset = BookSeries.objects.all()
-        self.fields['published_date'].widget = DateInput(attrs={'type': 'date'})
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'w-full bg-gray-700 text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500'}),
+            'series': forms.Select(attrs={'class': 'w-full bg-gray-700 text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500'}),
+            'volume_number': forms.NumberInput(attrs={'class': 'w-full bg-gray-700 text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500'}),
+            'published_date': forms.DateInput(attrs={'class': 'w-full bg-gray-700 text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500', 'type': 'date'}),
+            'cover_image': forms.FileInput(attrs={'class': 'w-full bg-gray-700 text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500'}),
+            'price': forms.NumberInput(attrs={'class': 'w-full bg-gray-700 text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500'}),
+            'categories': forms.SelectMultiple(attrs={'class': 'w-full bg-gray-700 text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500'}),
+            'ebook_file': forms.FileInput(attrs={'class': 'w-full bg-gray-700 text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500'}),
+        }
     
 
 
@@ -21,11 +25,20 @@ class SerieForm(forms.ModelForm):
     class Meta:
         model = BookSeries
         fields = ['title', 'author']
-    
+
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'w-full bg-gray-700 text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500'}),
+            'author': forms.Select(attrs={'class': 'w-full bg-gray-700 text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500'}),
+        }
+
 class AuthorForm(forms.ModelForm):
     class Meta:
         model = Author
         fields = ['name']
+
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'w-full bg-gray-700 text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500'}),
+        }
 
 class ReviewForm(forms.ModelForm):
     class Meta:
