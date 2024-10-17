@@ -18,7 +18,19 @@ class BookForm(forms.ModelForm):
             'categories': forms.SelectMultiple(attrs={'class': 'w-full bg-gray-700 text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500'}),
             'ebook_file': forms.FileInput(attrs={'class': 'w-full bg-gray-700 text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500'}),
         }
-    
+    def clean_price(self):
+        price = self.cleaned_data.get('price')
+        if price < 0:
+            raise forms.ValidationError("Price cannot be negative.")
+        return price
+
+    def clean(self):
+        cleaned_data = super().clean()
+        title = cleaned_data.get('title')
+        volume_number = cleaned_data.get('volume_number')
+
+        if title and volume_number and volume_number < 1:
+            self.add_error('volume_number', "Volume number must be at least 1.")
 
 
 class SerieForm(forms.ModelForm):
