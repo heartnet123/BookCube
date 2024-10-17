@@ -58,17 +58,23 @@ class OrderView(LoginRequiredMixin, View):
 class SearchView(View):
     def get(self, request):
         query = request.GET.get('q', '')
+        category_id = request.GET.get('category', '')
         books = Book.objects.filter(title__icontains=query)
         authors = Author.objects.filter(name__icontains=query)
         series = BookSeries.objects.all().annotate(average_rating=Avg('books__reviews__rating'))
+        categories = Category.objects.all()
         if query:
             series = series.filter(title__icontains=query)
+        if category_id:
+            books = books.filter(categories__id=category_id)
+            series = series.filter(books__categories__id=category_id)
 
         context = {
             'query': query,
             'books': books,
             'authors': authors,
             'series': series,
+            'categories': categories,
         }
         return render(request, 'search.html', context)
     
