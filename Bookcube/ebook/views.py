@@ -164,7 +164,7 @@ class AdminAddBookView(View):
             messages.success(request, 'เพิ่มหนังสือใหม่เรียบร้อยแล้ว')
             return redirect('store')
         else:
-            print(book_form.errors)  # เพิ่มบรรทัดนี้เพื่อแสดงข้อผิดพลาดในคอนโซล
+            print(book_form.errors) 
             messages.error(request, 'พบข้อผิดพลาดในการเพิ่มหนังสือ')
             context = {
                 'book_form': book_form,
@@ -186,7 +186,7 @@ class AdminAddSerieView(View):
         if series_form.is_valid():
             series_form.save()
             messages.success(request, 'เพิ่มซีรีส์ใหม่เรียบร้อยแล้ว')
-            return redirect('admin_add_book')  # เปลี่ยนเป็น URL ที่เหมาะสม
+            return redirect('admin_add_book')  
         else:
             messages.error(request, 'พบข้อผิดพลาดในการเพิ่มซีรีส์')
             context = {
@@ -209,7 +209,7 @@ class AdminAddAuthorView(View):
         if author_form.is_valid():
             author_form.save()
             messages.success(request, 'เพิ่มผู้เขียนใหม่เรียบร้อยแล้ว')
-            return redirect('admin_add_serie')  # เปลี่ยนเป็น URL ที่เหมาะสม
+            return redirect('admin_add_serie') 
         else:
             messages.error(request, 'พบข้อผิดพลาดในการเพิ่มผู้เขียน')
             context = {
@@ -235,7 +235,7 @@ class AddToFavoritesView(LoginRequiredMixin, View):
         if not UserFavoriteSeries.objects.filter(user=request.user, series=series).exists():
             UserFavoriteSeries.objects.create(user=request.user, series=series)
 
-        return redirect('search')  # เปลี่ยนเส้นทางไปที่หน้า Favorites
+        return redirect('search')  
 
 
 class RemoveFromFavoritesView(LoginRequiredMixin, View):
