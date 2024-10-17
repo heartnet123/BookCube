@@ -20,7 +20,7 @@ class BookForm(forms.ModelForm):
         }
     def clean_price(self):
         price = self.cleaned_data.get('price')
-        if price < 0:
+        if price is not None and price < 0:
             raise forms.ValidationError("Price cannot be negative.")
         return price
 
@@ -29,8 +29,10 @@ class BookForm(forms.ModelForm):
         title = cleaned_data.get('title')
         volume_number = cleaned_data.get('volume_number')
 
-        if title and volume_number and volume_number < 1:
+        if volume_number is not None and volume_number < 1:
             self.add_error('volume_number', "Volume number must be at least 1.")
+
+        return cleaned_data
 
 
 class SerieForm(forms.ModelForm):
